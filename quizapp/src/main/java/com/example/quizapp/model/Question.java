@@ -1,22 +1,26 @@
 package com.example.quizapp.model;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.JoinColumn;
+import java.util.List;
 
 @Entity
 public class Question {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate primary key
     private Long id;
 
     private String question;
 
     @ElementCollection
-    private String[] options;
+    @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_id"))
+    private List<String> options;
 
     private String correctAnswer;
 
@@ -26,7 +30,7 @@ public class Question {
 
     public Question(String question, String[] options, String correctAnswer) {
         this.question = question;
-        this.options = options;
+        this.options = List.of(options);
         this.correctAnswer = correctAnswer;
     }
 
@@ -47,11 +51,11 @@ public class Question {
         this.question = question;
     }
 
-    public String[] getOptions() {
+    public List<String> getOptions() {
         return options;
     }
 
-    public void setOptions(String[] options) {
+    public void setOptions(List<String> options) {
         this.options = options;
     }
 
