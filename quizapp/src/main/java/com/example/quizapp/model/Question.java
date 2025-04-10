@@ -15,7 +15,7 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate primary key
     private Long id;
-
+    private String domain; // Add this field to the Question entity
     private String question;
 
     @ElementCollection
@@ -26,6 +26,15 @@ public class Question {
 
     public Question() {
         // Default constructor for JPA
+    }
+
+    // Add getter and setter for domain
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public Question(String question, String[] options, String correctAnswer) {

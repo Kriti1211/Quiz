@@ -1,30 +1,64 @@
+<div class="navbar">
+  <div class="navbar-container">
+    <h1 class="navbar-title">Quiz App</h1>
+  </div>
+</div>
+
 <div class="quiz-container">
-  <div *ngIf="questions.length > 0; else loading">
-    <div *ngIf="currentQuestionIndex < questions.length; else result">
-      <h2 class="question">{{ questions[currentQuestionIndex]?.question }}</h2>
-      <div class="options">
-        <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="option">
-          <label>
-            <input
-              type="radio"
-              name="answer"
-              [value]="option"
-              (change)="onAnswerSelected(option)"
-            />
-            {{ option }}
-          </label>
-        </div>
+  <!-- Home Page -->
+  <div *ngIf="!quizStarted">
+    <h1 class="home-title">Select a Domain</h1>
+    <div class="domain-grid">
+      <!-- Dynamically generate domain cards -->
+      <div
+        class="domain-card"
+        *ngFor="let domain of domains"
+        (click)="selectDomain(domain)"
+      >
+        <h2>{{ domain }}</h2>
       </div>
-      <button class="submit-btn" (click)="submitAnswer()">Submit</button>
     </div>
   </div>
+  
+  <!-- Quiz Section -->
+  <div *ngIf="quizStarted">
+    <div *ngIf="questions.length > 0; else loading">
+      <div *ngIf="currentQuestionIndex < questions.length; else result">
+        <h2 class="question">{{ questions[currentQuestionIndex]?.question }}</h2>
+        <div class="options">
+          <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="option">
+            <label>
+              <input
+                type="radio"
+                name="answer"
+                [value]="option"
+                (change)="onAnswerSelected(option)"
+              />
+              {{ option }}
+            </label>
+          </div>
+        </div>
+        <button
+          class="submit-btn"
+          (click)="submitAnswer()"
+          [disabled]="!selectedAnswer"
+        >
+          Submit
+        </button>
+        <button class="quit-btn" (click)="quitQuiz()">Quit Quiz</button>
+      </div>
+    </div>
 
-  <ng-template #loading>
-    <p class="loading">Loading questions...</p>
-  </ng-template>
+    <!-- Loading State -->
+    <ng-template #loading>
+      <p class="loading">Loading questions...</p>
+    </ng-template>
 
-  <ng-template #result>
-    <h2 class="result-title">Quiz Completed!</h2>
-    <p class="result-score">Your score: {{ score }}/{{ questions.length }}</p>
-  </ng-template>
+    <!-- Quiz Result -->
+    <ng-template #result>
+      <h2 class="result-title">Quiz Completed!</h2>
+      <p class="result-score">Your score: {{ score }}/{{ questions.length }}</p>
+      <button class="home-btn" (click)="goToHomePage()">Play Again</button>
+    </ng-template>
+  </div>
 </div>

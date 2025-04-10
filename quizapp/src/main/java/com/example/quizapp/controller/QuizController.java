@@ -14,9 +14,11 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
-    // Get all questions
     @GetMapping
-    public List<Question> getQuestions() {
+    public List<Question> getQuestions(@RequestParam(required = false) String domain) {
+        if (domain != null) {
+            return quizService.getQuestionsByDomain(domain);
+        }
         return quizService.getQuestions();
     }
 

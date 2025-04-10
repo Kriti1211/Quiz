@@ -19,6 +19,10 @@ public class QuizService {
         return questionRepository.findAll();
     }
 
+    public List<Question> getQuestionsByDomain(String domain) {
+        return questionRepository.findByDomain(domain);
+    }
+
     // Add a new question
     public Question addQuestion(Question question) {
         return questionRepository.save(question);

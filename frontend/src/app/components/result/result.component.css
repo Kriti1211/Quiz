@@ -1,0 +1,13 @@
+/* Quiz Result */
+.result-title {
+    font-size: 1.8rem;
+    color: #f5f5f5; /* Bright text for headings */
+    text-align: center;
+  }
+  
+  .result-score {
+    font-size: 1.2rem;
+    color: #cccccc; /* Softer light text */
+    text-align: center;
+  }
+  
