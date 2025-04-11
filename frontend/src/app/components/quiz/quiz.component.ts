@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quiz',
@@ -10,12 +11,17 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.css'],
 })
-export class QuizComponent implements OnInit {
+export class QuizComponent implements OnInit, OnDestroy {
   questions: any[] | null = null;
   currentQuestionIndex: number = 0;
   selectedAnswer: string = '';
   score: number = 0;
   domain: string = '';
+
+  // New timer properties
+  timeLimit: number = 10; // seconds allowed per question
+  currentTime: number = this.timeLimit;
+  timerSubscription!: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +51,8 @@ export class QuizComponent implements OnInit {
           // Now shuffle the order of the questions
           this.questions = this.shuffleArray(mappedQuestions);
           console.log('Fetched and shuffled questions:', this.questions);
+          // Start timer for the first question
+          this.startTimer();
         },
         error: (error) => {
           console.error('Error fetching questions:', error);
@@ -66,8 +74,49 @@ export class QuizComponent implements OnInit {
     this.selectedAnswer = option;
   }
 
+  startTimer(): void {
+    // Reset currentTime and clear any existing timer
+    this.currentTime = this.timeLimit;
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+    // Create an interval observable that ticks every second
+    this.timerSubscription = interval(1000).subscribe(() => {
+      this.currentTime--;
+      if (this.currentTime <= 0) {
+        this.timerSubscription.unsubscribe();
+        this.autoSubmit();
+      }
+    });
+  }
+
+  autoSubmit(): void {
+    console.log('Time is up for this question');
+    // If no answer is selected, simply move to the next question
+    if (this.selectedAnswer === '') {
+      this.currentQuestionIndex++;
+      if (this.questions && this.currentQuestionIndex >= this.questions.length) {
+        this.router.navigate(['/result'], {
+          queryParams: {
+            score: this.score,
+            total: this.questions.length,
+          },
+        });
+      } else {
+        // Start timer for next question
+        this.startTimer();
+      }
+    } else {
+      // If an answer was selected, reuse the standard submission logic
+      this.onSubmitAnswer();
+    }
+  }
+
   onSubmitAnswer(): void {
-    console.log('Submit answer called');
+    // Ensure the timer stops once the answer is handled
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
     if (
       this.selectedAnswer ===
       this.questions![this.currentQuestionIndex].correctAnswer
@@ -76,7 +125,6 @@ export class QuizComponent implements OnInit {
     }
     this.selectedAnswer = '';
     this.currentQuestionIndex++;
-  
     if (this.questions && this.currentQuestionIndex >= this.questions.length) {
       this.router.navigate(['/result'], {
         queryParams: {
@@ -84,10 +132,22 @@ export class QuizComponent implements OnInit {
           total: this.questions.length,
         },
       });
+    } else {
+      // Start timer for next question if available
+      this.startTimer();
     }
   }
 
   onQuitQuiz(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
     this.router.navigate(['/']);
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 }

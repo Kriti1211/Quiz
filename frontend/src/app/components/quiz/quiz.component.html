@@ -1,5 +1,9 @@
 <div *ngIf="questions && questions.length > 0; else loading">
   <h2 class="quiz-title">{{ domain }} Quiz</h2>
+  <!-- Add the timer display below the title -->
+  <div class="timer" style="font-weight: bold; margin-bottom: 1rem;">
+    Time Remaining: {{ currentTime }} seconds
+  </div>
   <div class="question">
     {{ questions[currentQuestionIndex]?.question }}
   </div>

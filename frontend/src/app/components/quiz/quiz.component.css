@@ -2,7 +2,6 @@
 
 /* Quiz Container */
 .quiz-container {
-  max-width: 800px;
   margin: 0 auto;
   background-color: #8b1cc3; /* Darker background for the quiz container */
   padding: 20px;

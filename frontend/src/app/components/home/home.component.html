@@ -1,6 +1,10 @@
 <h1 class="home-title">Select a Domain</h1>
 <div class="domain-grid">
-  <div class="domain-card" *ngFor="let domain of domains" (click)="selectDomain(domain)">
+  <div 
+    class="domain-card" 
+    *ngFor="let domain of domains" 
+    (click)="selectDomain(domain)"
+    [ngClass]="domain.toLowerCase()">
     <h2>{{ domain }}</h2>
   </div>
 </div>
