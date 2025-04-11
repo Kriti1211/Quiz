@@ -4,17 +4,19 @@
 .quiz-container {
   max-width: 800px;
   margin: 0 auto;
-  background-color: #3e3642; /* Darker background for the quiz container */
+  background-color: #8b1cc3; /* Darker background for the quiz container */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Subtle shadow for depth */
   font-family: Arial, sans-serif;
+  min-height: 600px; /* Increased height */
+
 }
 
 /* Quiz Title */
 .quiz-title {
   font-size: 2rem;
-  color: #ffffff; /* Bright text for the title */
+  color: #070707; /* Bright text for the title */
   text-align: center;
   margin-bottom: 20px;
   font-weight: bold;
@@ -23,7 +25,7 @@
 /* Question Styling */
 .question {
   font-size: 1.5rem;
-  color: #f5f5f5; /* Bright text for questions */
+  color: #060606; /* Bright text for questions */
   margin-bottom: 20px;
 }
 
@@ -37,7 +39,7 @@
 }
 
 .option label {
-  color: #e0e0e0; /* Softer light text for options */
+  color: #070707; /* Softer light text for options */
   cursor: pointer;
 }
 

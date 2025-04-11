@@ -1,1 +1,28 @@
-<p>quiz works!</p>
+<div *ngIf="questions && questions.length > 0; else loading">
+  <h2 class="quiz-title">{{ domain }} Quiz</h2>
+  <div class="question">
+    {{ questions[currentQuestionIndex]?.question }}
+  </div>
+  <div class="options">
+    <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="option">
+      <label>
+        <input
+          type="radio"
+          name="answer"
+          [value]="option"
+          (change)="onAnswerSelected(option)"
+        />
+        {{ option }}
+      </label>
+    </div>
+  </div>
+  <button class="submit-btn" (click)="onSubmitAnswer()" [disabled]="!selectedAnswer">
+    Submit
+  </button>
+  <button class="quit-btn" (click)="onQuitQuiz()">
+    Quit Quiz
+  </button>
+</div>
+<ng-template #loading>
+  <p>Loading questions, please wait...</p>
+</ng-template>
