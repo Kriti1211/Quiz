@@ -17,6 +17,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   selectedAnswer: string = '';
   score: number = 0;
   domain: string = '';
+  userResponses: { question: string; selected: string; correct: string }[] = [];
+
 
   // New timer properties
   timeLimit: number = 10; // seconds allowed per question
@@ -91,52 +93,61 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   autoSubmit(): void {
-    console.log('Time is up for this question');
-    // If no answer is selected, simply move to the next question
-    if (this.selectedAnswer === '') {
-      this.currentQuestionIndex++;
-      if (this.questions && this.currentQuestionIndex >= this.questions.length) {
-        this.router.navigate(['/result'], {
-          queryParams: {
-            score: this.score,
-            total: this.questions.length,
-          },
-        });
-      } else {
-        // Start timer for next question
-        this.startTimer();
-      }
-    } else {
-      // If an answer was selected, reuse the standard submission logic
-      this.onSubmitAnswer();
-    }
-  }
-
-  onSubmitAnswer(): void {
-    // Ensure the timer stops once the answer is handled
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-    }
-    if (
-      this.selectedAnswer ===
-      this.questions![this.currentQuestionIndex].correctAnswer
-    ) {
-      this.score++;
-    }
-    this.selectedAnswer = '';
+  console.log('Time is up for this question');
+  if (this.selectedAnswer === '') {
+    // Store the unanswered response for the current question
+    this.userResponses.push({
+      question: this.questions![this.currentQuestionIndex].question,
+      selected: '',
+      correct: this.questions![this.currentQuestionIndex].correctAnswer,
+    });
     this.currentQuestionIndex++;
     if (this.questions && this.currentQuestionIndex >= this.questions.length) {
       this.router.navigate(['/result'], {
         queryParams: {
           score: this.score,
           total: this.questions.length,
+          responses: JSON.stringify(this.userResponses),
         },
       });
     } else {
-      // Start timer for next question if available
       this.startTimer();
     }
+  } else {
+    this.onSubmitAnswer();
   }
+}
+
+onSubmitAnswer(): void {
+  if (this.timerSubscription) {
+    this.timerSubscription.unsubscribe();
+  }
+  // Store the user's response for the current question
+  this.userResponses.push({
+    question: this.questions![this.currentQuestionIndex].question,
+    selected: this.selectedAnswer,
+    correct: this.questions![this.currentQuestionIndex].correctAnswer,
+  });
+  if (
+    this.selectedAnswer ===
+    this.questions![this.currentQuestionIndex].correctAnswer
+  ) {
+    this.score++;
+  }
+  this.selectedAnswer = '';
+  this.currentQuestionIndex++;
+  if (this.questions && this.currentQuestionIndex >= this.questions.length) {
+    this.router.navigate(['/result'], {
+      queryParams: {
+        score: this.score,
+        total: this.questions.length,
+        responses: JSON.stringify(this.userResponses),
+      },
+    });
+  } else {
+    this.startTimer();
+  }
+}
 
   onQuitQuiz(): void {
     if (this.timerSubscription) {
